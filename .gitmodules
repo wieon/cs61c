@@ -1,0 +1,3 @@
+[submodule "project/su26-proj1-starter"]
+	path = project/su26-proj1-starter
+	url = git@github.com:61c-teach/su26-proj1-starter.git

@@ -16,4 +16,3 @@ step 2
 print meets_len_req
 print length
 q
-y

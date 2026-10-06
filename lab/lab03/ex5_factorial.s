@@ -27,6 +27,25 @@ main:
 # The return value should be stored in a0
 factorial:
     # YOUR CODE HERE
+    # Initialization
+    addi t1 t1 1 # t1 stores result of fatorial
+    addi t2 t2 1 # t2 stores i, which counts iterative times
+    beq a0 x0 exit
+
+loop:
+    addi t3 x0 1 # j = 1
+    mv t4 t1 # store result of previous loops to be added this loop
+     
+iter:
+    add t1 t1 t4 # result += fac(i-1)
+    addi t3 t3 1 # j++
+    bge t2 t3 iter # goto iter when j == i
+    
+    addi t2 t2 1 # i++
+    blt t2 a0 loop
+
+exit:
+    mv a0 t1 # store the result in a0
 
     # This is how you return from a function. You'll learn more about this later.
     # This should be the last line in your program.

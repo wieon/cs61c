@@ -24,7 +24,41 @@ static void update_head(game_t *game, unsigned int snum);
 /* Task 1 */
 game_t *create_default_game() {
   // TODO: Implement this function.
-  return NULL;
+  game_t *start_game = malloc(sizeof(game_t));
+  if (!start_game) {
+    perror("Fail to allocate memory for new game");
+    return NULL;
+  }
+  start_game->num_rows = 18;
+  start_game->num_snakes = 1;
+
+  start_game->board = (char **)malloc(sizeof(char *) * start_game->num_rows);
+  if (!start_game->board) {
+    perror("Fail to allocate memory for board");
+    return NULL;
+  }
+  for (int i = 0; i < start_game->num_rows; i++) {
+    start_game->board[i] = (char *)malloc(sizeof(char) * 21);
+    if (!start_game->board[i]) {
+    perror("Fail to allocate memory for ptr in board");
+    return NULL;
+    }
+  }
+  start_game->board[0] = "####################\n";
+  start_game->board[1] = "#                  #\n";
+  start_game->board[2] = "# d>D    *         #\n";
+  start_game->board[17] = "####################\n";
+  for (int i = 3; i < start_game->num_rows-1; i++) {
+    start_game->board[i] = "#                  #\n";
+  }
+
+  start_game->snakes->head_col = 4;
+  start_game->snakes->head_row = 2;
+  start_game->snakes->tail_col = 2;
+  start_game->snakes->tail_row = 2;
+  start_game->snakes->live = true;
+
+  return start_game;
 }
 
 /* Task 2 */

@@ -52,6 +52,11 @@ game_t *create_default_game() {
     start_game->board[i] = "#                  #\n";
   }
 
+  start_game->snakes = (snake_t *)malloc(sizeof(snake_t *));
+  if (!start_game->snakes) {
+    perror("Fail to allocate memory for snakes");
+    return NULL;
+  }
   start_game->snakes->head_col = 4;
   start_game->snakes->head_row = 2;
   start_game->snakes->tail_col = 2;
@@ -59,11 +64,18 @@ game_t *create_default_game() {
   start_game->snakes->live = true;
 
   return start_game;
+
 }
 
 /* Task 2 */
 void free_game(game_t *game) {
   // TODO: Implement this function.
+  free(game->snakes);
+  for (int i = 0; i < game->num_rows; i++) {
+    free(game->board[1]);
+  }
+  free(game->board);
+  free(game);
   return;
 }
 

@@ -38,21 +38,31 @@ game_t *create_default_game() {
     return NULL;
   }
   for (int i = 0; i < start_game->num_rows; i++) {
-    start_game->board[i] = (char *)malloc(sizeof(char) * 21);
+    start_game->board[i] = (char *)malloc(sizeof(char) * 22);  // '\0' in the end
     if (!start_game->board[i]) {
-    perror("Fail to allocate memory for ptr in board");
-    return NULL;
+      perror("Fail to allocate memory for ptr in board");
+      return NULL;
     }
   }
-  start_game->board[0] = "####################\n";
-  start_game->board[1] = "#                  #\n";
-  start_game->board[2] = "# d>D    *         #\n";
-  start_game->board[17] = "####################\n";
-  for (int i = 3; i < start_game->num_rows-1; i++) {
-    start_game->board[i] = "#                  #\n";
+  
+  /* Memory leak! Segment error! */
+  // start_game->board[0] = "####################\n";
+  // start_game->board[1] = "#                  #\n";
+  // start_game->board[2] = "# d>D    *         #\n";
+  // start_game->board[17] = "####################\n";
+  // for (int i = 3; i < start_game->num_rows-1; i++) {
+  //   start_game->board[i] = "#                  #\n";
+  // }
+
+  strcpy(start_game->board[0], "####################\n");
+  strcpy(start_game->board[1], "#                  #\n");
+  strcpy(start_game->board[2], "# d>D    *         #\n");
+  strcpy(start_game->board[17], "####################\n");
+    for (int i = 3; i < start_game->num_rows-1; i++) {
+      strcpy(start_game->board[i], "#                  #\n");
   }
 
-  start_game->snakes = (snake_t *)malloc(sizeof(snake_t *));
+  start_game->snakes = (snake_t *)malloc(sizeof(snake_t));
   if (!start_game->snakes) {
     perror("Fail to allocate memory for snakes");
     return NULL;
@@ -72,7 +82,7 @@ void free_game(game_t *game) {
   // TODO: Implement this function.
   free(game->snakes);
   for (int i = 0; i < game->num_rows; i++) {
-    free(game->board[1]);
+    free(game->board[i]);
   }
   free(game->board);
   free(game);

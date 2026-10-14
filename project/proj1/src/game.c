@@ -67,11 +67,17 @@ game_t *create_default_game() {
     perror("Fail to allocate memory for snakes");
     return NULL;
   }
-  start_game->snakes->head_col = 4;
-  start_game->snakes->head_row = 2;
-  start_game->snakes->tail_col = 2;
-  start_game->snakes->tail_row = 2;
-  start_game->snakes->live = true;
+  start_game->snakes[0].head_col = 4;
+  start_game->snakes[0].head_row = 2;
+  start_game->snakes[0].tail_col = 2;
+  start_game->snakes[0].tail_row = 2;
+  start_game->snakes[0].live = true;
+
+  // start_game->snakes->head_col = 4;
+  // start_game->snakes->head_row = 2;
+  // start_game->snakes->tail_col = 2;
+  // start_game->snakes->tail_row = 2;
+  // start_game->snakes->live = true;
 
   return start_game;
 
@@ -131,7 +137,16 @@ static void set_board_at(game_t *game, unsigned int row, unsigned int col, char 
 */
 static bool is_tail(char c) {
   // TODO: Implement this function.
-  return true;
+
+  /* '\0' cannot pass the test. */
+  // char str[] = "wasd";
+  // if (strchr(str, c)) {
+  //   return true;
+  // } else {
+  //   return false;
+  // }
+
+  return (c == 'a' || c == 'w' || c == 's' || c == 'd');
 }
 
 /*
@@ -141,7 +156,7 @@ static bool is_tail(char c) {
 */
 static bool is_head(char c) {
   // TODO: Implement this function.
-  return true;
+  return (c == 'A' || c == 'W' || c == 'S' || c == 'D' || c == 'x');
 }
 
 /*
@@ -150,6 +165,15 @@ static bool is_head(char c) {
 */
 static bool is_snake(char c) {
   // TODO: Implement this function.
+  if (c == '\0') {
+    return false;
+  }
+  char str[] = "wasd^<v>WASDx";
+  if (strchr(str, c)) {
+    return true;
+  } else {
+    return false;
+  }
   return true;
 }
 
@@ -160,7 +184,14 @@ static bool is_snake(char c) {
 */
 static char body_to_tail(char c) {
   // TODO: Implement this function.
-  return '?';
+  switch (c) {
+    case '<': c = 'a'; break;
+    case '>': c = 'd'; break;
+    case '^': c = 'w'; break;
+    case 'v': c = 's'; break;
+    default: return '?';
+  }
+  return c;
 }
 
 /*
@@ -170,7 +201,14 @@ static char body_to_tail(char c) {
 */
 static char head_to_body(char c) {
   // TODO: Implement this function.
-  return '?';
+  switch (c) {
+    case 'A': c = '<'; break;
+    case 'W': c = '^'; break;
+    case 'S': c = 'v'; break;
+    case 'D': c = '>'; break;
+    default: return '?';
+  }
+  return c;
 }
 
 /*
@@ -180,6 +218,12 @@ static char head_to_body(char c) {
 */
 static unsigned int get_next_row(unsigned int cur_row, char c) {
   // TODO: Implement this function.
+  if (c == 'v' || c == 's' || c == 'S') {
+    return cur_row + 1;
+  }
+  if (c == '^' || c == 'w' || c == 'W') {
+    return cur_row - 1;
+  }
   return cur_row;
 }
 
@@ -190,6 +234,12 @@ static unsigned int get_next_row(unsigned int cur_row, char c) {
 */
 static unsigned int get_next_col(unsigned int cur_col, char c) {
   // TODO: Implement this function.
+  if (c == '>' || c == 'd' || c == 'D') {
+    return cur_col + 1;
+  }
+  if (c == '<' || c == 'a' || c == 'A') {
+    return cur_col - 1;
+  }
   return cur_col;
 }
 
@@ -202,7 +252,14 @@ static unsigned int get_next_col(unsigned int cur_col, char c) {
 */
 static char next_square(game_t *game, unsigned int snum) {
   // TODO: Implement this function.
-  return '?';
+  unsigned int row = game->snakes[snum].head_row;
+  unsigned int col = game->snakes[snum].head_col;
+  char head = get_board_at(game, row, col);
+  row = get_next_row(row, head);
+  col = get_next_col(col, head);
+  head = get_board_at(game, row, col);
+  return head;
+  // return '?';
 }
 
 /*

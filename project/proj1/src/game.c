@@ -67,17 +67,17 @@ game_t *create_default_game() {
     perror("Fail to allocate memory for snakes");
     return NULL;
   }
-  start_game->snakes[0].head_col = 4;
-  start_game->snakes[0].head_row = 2;
-  start_game->snakes[0].tail_col = 2;
-  start_game->snakes[0].tail_row = 2;
-  start_game->snakes[0].live = true;
+  // start_game->snakes[0].head_col = 4;
+  // start_game->snakes[0].head_row = 2;
+  // start_game->snakes[0].tail_col = 2;
+  // start_game->snakes[0].tail_row = 2;
+  // start_game->snakes[0].live = true;
 
-  // start_game->snakes->head_col = 4;
-  // start_game->snakes->head_row = 2;
-  // start_game->snakes->tail_col = 2;
-  // start_game->snakes->tail_row = 2;
-  // start_game->snakes->live = true;
+  start_game->snakes->head_col = 4;
+  start_game->snakes->head_row = 2;
+  start_game->snakes->tail_col = 2;
+  start_game->snakes->tail_row = 2;
+  start_game->snakes->live = true;
 
   return start_game;
 
@@ -275,6 +275,22 @@ static char next_square(game_t *game, unsigned int snum) {
 */
 static void update_head(game_t *game, unsigned int snum) {
   // TODO: Implement this function.
+  /* On the borad, change the old head from a head character (WASD) into a body character (^) */
+  unsigned int row = game->snakes[snum].head_row;
+  unsigned int col = game->snakes[snum].head_col;
+  char head = get_board_at(game, row, col);  // save old head
+  char body = head_to_body(head);
+  set_board_at(game, row, col, body);
+
+  /* add a new head where the snake is moving into */
+  row = get_next_row(row, head);
+  col = get_next_col(col, head);
+  set_board_at(game, row, col, head);
+
+  /* In the snake_t struct, update the row and column of the head. */
+  game->snakes[snum].head_row = row;
+  game->snakes[snum].head_col = col;
+
   return;
 }
 
@@ -290,12 +306,48 @@ static void update_head(game_t *game, unsigned int snum) {
 */
 static void update_tail(game_t *game, unsigned int snum) {
   // TODO: Implement this function.
+  /* On the game board, blank out the current tail. */
+  unsigned int row = game->snakes[snum].tail_row;
+  unsigned int col = game->snakes[snum].tail_col;
+  char tail = get_board_at(game, row, col);  // save old tail
+  set_board_at(game, row, col, ' ');
+
+  /* change the new tail from a body character (^<v>) into a tail character (wasd) */
+  row = get_next_row(row, tail);
+  col = get_next_col(col, tail);
+  char body = get_board_at(game, row, col);
+  tail = body_to_tail(body);  // the old tail may not the same as the new one
+  set_board_at(game, row, col, tail);
+
+  /* In the snake_t struct, update the row and column of the tail. */
+  game->snakes[snum].tail_row = row;
+  game->snakes[snum].tail_col = col;
+
   return;
 }
 
 /* Task 4.5 */
 void update_game(game_t *game, int (*add_food)(game_t *game)) {
   // TODO: Implement this function.
+  
+  for (unsigned int i = 0; i < game->num_snakes; i++) {
+    char next = next_square(game, i);
+    /* snake dies when crashing into the body of a snake or a wall */
+    if (next == '#' || is_snake(next)) {
+      game->snakes[i].live = false;
+      game->board[game->snakes[i].head_row][game->snakes[i].head_col] = 'x';
+    } 
+    /* snake eats the fruit and grows by 1 unit in length */
+    else if (next == '*') {
+      update_head(game, i);
+      add_food(game);
+    } 
+    /* snake moves one step in the direction of its head */
+    else {
+      update_head(game, i);
+      update_tail(game, i);
+    }
+  }
   return;
 }
 

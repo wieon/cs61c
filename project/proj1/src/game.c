@@ -329,18 +329,19 @@ static void update_tail(game_t *game, unsigned int snum) {
 /* Task 4.5 */
 void update_game(game_t *game, int (*add_food)(game_t *game)) {
   // TODO: Implement this function.
-  
   for (unsigned int i = 0; i < game->num_snakes; i++) {
     char next = next_square(game, i);
     /* snake dies when crashing into the body of a snake or a wall */
     if (next == '#' || is_snake(next)) {
       game->snakes[i].live = false;
-      game->board[game->snakes[i].head_row][game->snakes[i].head_col] = 'x';
+      unsigned int row = game->snakes[i].head_row;
+      unsigned int col = game->snakes[i].head_col;
+      game->board[row][col] = 'x';
     } 
     /* snake eats the fruit and grows by 1 unit in length */
     else if (next == '*') {
       update_head(game, i);
-      add_food(game);
+      (*add_food)(game);
     } 
     /* snake moves one step in the direction of its head */
     else {

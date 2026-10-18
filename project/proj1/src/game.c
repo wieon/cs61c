@@ -354,13 +354,65 @@ void update_game(game_t *game, int (*add_food)(game_t *game)) {
 /* Task 5.1 */
 char *read_line(FILE *fp) {
   // TODO: Implement this function.
+  int length = 0;  // already read
+  unsigned int buff_size = 10;  // allocated size
+  char *buff = malloc(buff_size * sizeof(char));  // ptr to allocated memory
+  if (!buff) {
+    free(buff);
+    return NULL;
+  }
+
+  /* fgets stops reading when 1.buff is full 2.reach '\n' 3.reach the end of the file.
+     fgets returns str_ptr when succeeds, while NULL when fails(error or EOF) or reach the end of the file.
+     The contents in the file must have '\n' before the end of the file,
+     or the last line won't be returned. */
+  while (fgets(buff + length, buff_size - length, fp)) {
+    if (strchr(buff + length, '\n')) {  // '\n' is in newly read chars
+      return buff;
+    }
+    // if buff_size is not enough
+    length += strlen(buff + length);  // add the length of already read string
+    buff_size *= 2;
+    buff = realloc(buff, buff_size);
+  }
+
+  /* if nothing is read in */
+  if (length == 0) {
+    free(buff);
+  }
+
   return NULL;
 }
 
 /* Task 5.2 */
 game_t *load_board(FILE *fp) {
   // TODO: Implement this function.
-  return NULL;
+  game_t *new_game = malloc(sizeof(game_t));
+  if (!new_game) {
+    free(new_game);
+    return NULL;
+  }
+  new_game->num_rows = 0;
+  new_game->num_snakes = 0;
+  new_game->snakes = NULL;
+  new_game->board = NULL;
+
+  char *line;
+  while ((line = read_line(fp))) {  // true value
+    char **init_board = realloc(new_game->board, (new_game->num_rows + 1) * sizeof(char *));
+    if (!init_board) {
+      free(init_board);
+      free(new_game->board);
+      free(new_game);
+      return NULL;
+    }
+
+    init_board[new_game->num_rows] = line;
+    new_game->num_rows += 1;
+    new_game->board = init_board;
+  }
+
+  return new_game;
 }
 
 /*
@@ -373,11 +425,54 @@ game_t *load_board(FILE *fp) {
 */
 static void find_head(game_t *game, unsigned int snum) {
   // TODO: Implement this function.
+  unsigned int row = game->snakes[snum].tail_row;
+  unsigned int col = game->snakes[snum].tail_col;
+  char next = get_board_at(game, row, col);
+  while (!is_head(next)) {
+    row = get_next_row(row, next);
+    col = get_next_col(col, next);
+    next = get_board_at(game, row, col);
+  }
+  game->snakes[snum].head_row = row;
+  game->snakes[snum].head_col = col;
+
   return;
 }
 
 /* Task 6.2 */
 game_t *initialize_snakes(game_t *game) {
   // TODO: Implement this function.
-  return NULL;
+  /* count the number of snakes on the board and allocate memory for them */
+  unsigned int snakes_num = 0;
+  for (unsigned int row = 0; row < game->num_rows; row++) {
+    for (unsigned int col = 0; col < strlen(game->board[row]); col++) {
+      char this_char = game->board[row][col];
+      if (is_tail(this_char)) {
+        snakes_num++;
+      }
+    }
+  }
+  game->num_snakes = snakes_num;
+  game->snakes = malloc(snakes_num * sizeof(snake_t));
+  if (!game->snakes) {
+    free(game->snakes);
+    return NULL;
+  }
+
+  /* fill in snake_t details of each snake */
+  snakes_num = 0;
+  for (unsigned int row = 0; row < game->num_rows; row++) {
+    for (unsigned int col = 0; col < strlen(game->board[row]); col++) {
+      char this_char = game->board[row][col];
+      if (is_tail(this_char)) {
+        game->snakes[snakes_num].live = true;
+        game->snakes[snakes_num].tail_row = row;
+        game->snakes[snakes_num].tail_col = col;
+        find_head(game, snakes_num);
+        snakes_num++;
+      }
+    }
+  }
+
+  return game;
 }

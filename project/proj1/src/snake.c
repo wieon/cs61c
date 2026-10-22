@@ -45,11 +45,11 @@ int main(int argc, char *argv[]) {
   if (in_filename != NULL) {
     // TODO: Load the board from in_filename
     FILE *fp = fopen(in_filename, "r");
-    game_t *game = load_board(fp);
     // TODO: If the file doesn't exist, return -1
     if (!fp) {
       return -1;
     }
+    game = load_board(fp);
     // TODO: Then call initialize_snakes on the game you made
     game = initialize_snakes(game);
     // TODO: close file pointer

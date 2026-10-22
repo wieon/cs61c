@@ -67,17 +67,17 @@ game_t *create_default_game() {
     perror("Fail to allocate memory for snakes");
     return NULL;
   }
-  // start_game->snakes[0].head_col = 4;
-  // start_game->snakes[0].head_row = 2;
-  // start_game->snakes[0].tail_col = 2;
-  // start_game->snakes[0].tail_row = 2;
-  // start_game->snakes[0].live = true;
+  start_game->snakes[0].head_col = 4;
+  start_game->snakes[0].head_row = 2;
+  start_game->snakes[0].tail_col = 2;
+  start_game->snakes[0].tail_row = 2;
+  start_game->snakes[0].live = true;
 
-  start_game->snakes->head_col = 4;
-  start_game->snakes->head_row = 2;
-  start_game->snakes->tail_col = 2;
-  start_game->snakes->tail_row = 2;
-  start_game->snakes->live = true;
+  // start_game->snakes->head_col = 4;
+  // start_game->snakes->head_row = 2;
+  // start_game->snakes->tail_col = 2;
+  // start_game->snakes->tail_row = 2;
+  // start_game->snakes->live = true;
 
   return start_game;
 
@@ -367,14 +367,19 @@ char *read_line(FILE *fp) {
      fgets returns str_ptr when succeeds, while NULL when fails(error or EOF) or reach the end of the file.
      The contents in the file must have '\n' before the end of the file,
      or the last line won't be returned. */
-  while (fgets(buff + length, buff_size - length, fp)) {
+  while (fgets(buff + length, (int)(buff_size - length), fp)) {
     if (strchr(buff + length, '\n')) {  // '\n' is in newly read chars
       return buff;
     }
     // if buff_size is not enough
     length += strlen(buff + length);  // add the length of already read string
     buff_size *= 2;
-    buff = realloc(buff, buff_size);
+    char *new_buff = realloc(buff, buff_size);
+    if (!new_buff) {
+      free(buff);
+      return NULL;
+    }
+    buff = new_buff;
   }
 
   /* if nothing is read in */
@@ -391,6 +396,7 @@ game_t *load_board(FILE *fp) {
   game_t *new_game = malloc(sizeof(game_t));
   if (!new_game) {
     free(new_game);
+    fprintf(stderr, "Error: Fail to allocate game structure");
     return NULL;
   }
   new_game->num_rows = 0;

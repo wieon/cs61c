@@ -8,11 +8,25 @@
 # Returns:
 #   None
 # =================================================================
+# abs:
+#     # Prologue
+
+#     # PASTE HERE
 abs:
-    # Prologue
+  # Load number from memory
+  lw t0 0(a0)
+  ebreak
+  blt t0, zero, done
 
-    # PASTE HERE
+  # Negate a0
+  sub t0, x0, t0
 
-    # Epilogue
+  # Store number back to memory
+  sw t0 4(a0)
 
-    jr ra
+done:
+  jr ra
+
+#     # Epilogue
+
+#     jr ra

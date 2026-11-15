@@ -17,23 +17,23 @@ relu:
     bge x0, a1, exception  # if length of array <= 0
     # If length of array is no less than 1
     li t1, 0  # set i = 0
-    
-exception:
-    li a0 36
-    j exit
 
 loop_start:
     lw t0, 0(a0)  # t0 = a[i]
     # If a[i] >= 0
-    blt t0, x0, loop_continue
+    bge t0, x0, loop_continue
     # If a[i] < 0
-    sw t0, 0(a0)  # store a[i] back to memory
+    sw x0, 0(a0)  # store a[i] back to memory
     
 loop_continue:
     addi a0, a0, 4  # address of next integer in the array
     addi t1, t1, 1  # i += 1
     blt t1, a1, loop_start  # i < n
     j loop_end
+    
+exception:
+    li a0 36
+    j exit
 
 loop_end:
     # Epilogue

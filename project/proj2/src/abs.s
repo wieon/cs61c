@@ -7,26 +7,23 @@
 #   a0 (int*) is a pointer to the input integer
 # Returns:
 #   None
-# =================================================================
-# abs:
-#     # Prologue
-
-#     # PASTE HERE
+# ================================================================= 
 abs:
+  # Prologue
+  
+  # PASTE HERE
   # Load number from memory
   lw t0 0(a0)
   ebreak
-  blt t0, zero, done
+  bge t0, zero, done
 
   # Negate a0
   sub t0, x0, t0
 
+  # Epilogue
   # Store number back to memory
-  sw t0 4(a0)
+  sw t0 0(a0)
 
 done:
   jr ra
 
-#     # Epilogue
-
-#     jr ra

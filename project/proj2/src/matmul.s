@@ -55,10 +55,10 @@ matmul:
     mv s6, a6
     
     # Initialize
-    add t0, t0, x0  # i, stride of outer loop
+    li t0, 0  # i = 0, stride of outer loop
     
 outer_loop_start:
-    add t1, t1, x0  # j, stride of inner loop, reset j
+    li t1, 0  # j = 0, stride of inner loop, reset j
     
 inner_loop_start:
    # Save arguments of dot in registers
@@ -78,7 +78,7 @@ inner_loop_start:
     sw t1, 4(sp)
     
     # Call dot function
-    jal ra,dot  
+    jal dot  
     
     # Save the dot product of A and B to C
     sw a0, 0(s6)
@@ -87,7 +87,7 @@ inner_loop_start:
     # Epilogue ( when matmul serves as caller )
     # Restore saved non-preserved registers
     lw t0, 0(sp)
-    lw t1, 0(sp)
+    lw t1, 4(sp)
     addi sp, sp, 8
 
     # Update j and judge the condition for next loop
@@ -98,7 +98,7 @@ inner_loop_end:
     addi t0, t0, 1  # i++
     bge t0, s1, outer_loop_end  # when i >= n ( height of A )
     li t2, 4
-    mul t2, t2, t0  # i * m ( width of A )
+    #mul t2, t2, t0  # i * m ( width of A )
     mul t2, t2, s2 # offset of A
     add s0, s0, t2  # point to the next row of A
     j outer_loop_start  # start the next outer loop

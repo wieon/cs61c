@@ -45,7 +45,7 @@ classify:
     sw s11, 48(sp)
     mv s0, a1  # argv
     mv s1, a2
-    
+    ebreak
     # Read pretrained m0
     li a0, 8
     jal malloc
@@ -56,6 +56,7 @@ classify:
     lw a0, 4(s0)  # pointer to the filepath string of m0
     jal read_matrix
     mv s3, a0  # pointer to the matrix m0 in memory
+    ebreak
 
     # Read pretrained m1
     li a0, 8
@@ -78,7 +79,7 @@ classify:
     lw a0, 12(s0)  # pointer to the filepath string of input
     jal read_matrix
     mv s7, a0  # pointer to the matrix input in memory
-
+    
     # Allocate memory for h
     lw t0, 0(s2)  # number of rows of m0
     lw t1, 4(s6)  # number of columns of input
@@ -98,7 +99,6 @@ classify:
     lw a5, 4(s6)  # number of cols of input
     mv a6, s9  # pointer to h
     jal matmul
-    
     # Compute h = relu(h)
     mv a0, s9  # pointer to h
     mv a1, s8  # size of h
@@ -137,7 +137,7 @@ classify:
     mul a1, t0, t1  # compute the size of o
     jal argmax
     mv s11, a0  # store the index of the largest element
-    ebreak
+    
     bne s1, x0, continue  # if the print argument != 0
     
     # If enabled (the print argument == 0), print argmax(o) and newline
@@ -164,7 +164,7 @@ continue:
     jal free
     mv a0, s10
     jal free
-        
+    
     # Return argmax(o)
     mv a0, s11    
     

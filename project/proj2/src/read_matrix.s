@@ -46,7 +46,7 @@ read_matrix:
     mv s3, a0  # store file descriptor in s3
     li t0, -1
     beq s3, t0, exception_27  # If opening the file failed, file descriptor value is -1.
-
+    
     # Read the number of rows from the file
     mv a0, s3  # move file descriptor to a0
     mv a1, s1  # A pointer to the buffer which will contain the number of rows.

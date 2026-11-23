@@ -67,17 +67,17 @@ read_matrix:
     lw t0, 0(s1)  # read the number of rows from memory
     lw t1, 0(s2)  # read the number of columns from memory
     mul t2, t0, t1  # number of rows * number of columns
-    slli t2, t2, 2  # The size of the memory that we want to allocate (in bytes)
+    slli t2, t2, 2  # The size of the memory that we want to allocate in bytes
     mv s4, t2  # store the size of allocated memory in s4
     mv a0, s4  # argument of malloc
     jal malloc
-    mv s5, a0  # store the pointer to the allocated memory in s4
+    mv s5, a0  # store the pointer to the allocated memory in s5
     beq a0, x0, exception_26  # malloc returns an error
     
     # Read the matrix from the file to the memory allocated
     mv a0, s3  # move file descriptor to a0
     mv a1, s5  # the pointer to the allocated memory
-    mv a2, s4 # the number of bytes to read from the file
+    mv a2, s4  # the number of bytes to read from the file
     jal fread
     bne a0, s4, exception_29  # fread does not read the correct number of bytes
     

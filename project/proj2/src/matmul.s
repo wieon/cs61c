@@ -78,7 +78,7 @@ inner_loop_start:
     sw t1, 4(sp)
     
     # Call dot function
-    jal dot  
+    jal dot
     
     # Save the dot product of A and B to C
     sw a0, 0(s6)
